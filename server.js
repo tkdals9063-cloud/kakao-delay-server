@@ -19,7 +19,7 @@ app.post("/delay", async (req, res) => {
   const userKey = req.body.userRequest.user.id;
   const workType = req.body.action.params.workType;
 
-  // 먼저 바로 OK 응답하기 (오픈빌더에서 에러 안 뜨게)
+  // 먼저 바로 OK 응답
   res.json({
     version: "2.0",
     resultCode: "OK",
@@ -29,7 +29,7 @@ app.post("/delay", async (req, res) => {
   // 30분 대기
   await sleep(DELAY);
 
-  // workType에 따라 다른 메시지 전송
+  // workType에 따라 메시지 분기
   let message = "";
 
   if (workType === "sit") {
@@ -51,25 +51,39 @@ app.post("/delay", async (req, res) => {
     message = "30분 동안 근무 중이시네요! 스트레칭 한번 해볼까요?";
   }
 
-  // 메시지 카톡으로 전송
+  // 메시지 + 버튼 카카오톡으로 전송
   await axios({
     method: "post",
     url: "https://kapi.kakao.com/v2/bot/message/send",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `KakaoAK ${KAKAO_BOT_TOKEN}`
+      Authorization: `KakaoAK ${KAKAO_BOT_TOKEN}`
     },
     data: {
       user_key: userKey,
       template_object: {
         object_type: "text",
         text: message,
-        link: { web_url: "https://kakao.com" }
+        link: { web_url: "https://kakao.com" },
+        buttons: [
+          {
+            label: "근무 재시작",
+            action: "block",
+            blockId: "YOUR_DELAY_BLOCK_ID",
+            extra: { workType: workType }
+          },
+          {
+            label: "근무 끝",
+            action: "message",
+            messageText: "수고하셨습니다! 오늘 근무 종료할게요 👍"
+          }
+        ]
       }
     }
   });
 
-  console.log("30분 후 메시지 전송 완료");
+  console.log("30분 후 메시지 + 버튼 전송 완료");
 });
 
+// 서버 실행
 app.listen(3000, () => console.log("서버 실행됨 (포트 3000)"));
