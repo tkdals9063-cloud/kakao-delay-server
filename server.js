@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 
 // 🔑 카카오 봇 토큰 (KakaoAK ...)
-const KAKAO_BOT_TOKEN = "YOUR_KAKAO_BOT_RESTAPI_KEY";
+const KAKAO_BOT_TOKEN = "1234567890abcdef1234567890abcdef";
 
 // 30분(1800초)
 const DELAY = 1800 * 1000;
@@ -86,7 +86,7 @@ app.post("/delay", async (req, res) => {
             {
               label: "근무 재시작",
               action: "block",
-              blockId: "YOUR_RESTART_BLOCK_ID",
+              blockId: "abcd1234efgh5678ijkl9012",
               extra: { workType }
             },
             {
